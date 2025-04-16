@@ -1,0 +1,55 @@
+GRAFANA QUE FUNCIONOU
+
+
+# Habilita o modo anônimo
+grafana:
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+    security:
+      admin_password: "admin"  # Altere a senha para algo seguro
+
+  # Datasources configurados
+grafana:
+  enabled: true
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-server.observability.svc.cluster.local:80
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki.observability.svc.cluster.local:3100
+          basicAuth: false
+          editable: false
+        - name: Tempo
+          type: tempo
+          access: proxy
+          url: http://tempo.observability.svc.cluster.local:3100
+          basicAuth: false
+          editable: false
+
+  # Adicione outras configurações que você queira
+
+
+# Persistência de dados para o Grafana (opcional)
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClassName: "default"
+  accessModes:
+    - ReadWriteOnce
+
+# Expor o Grafana apenas internamente (sem LoadBalancer ou NodePort)
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
